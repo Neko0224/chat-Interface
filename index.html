@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡易互動式聊天</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        async function sendMessage() {
+            const userMessage = document.getElementById("user-input").value;
+            if (!userMessage) return;
+
+            const chatBox = document.getElementById("chat-box");
+            const userBubble = `<div class="chat user">${userMessage}</div>`;
+            chatBox.innerHTML += userBubble;
+            document.getElementById("user-input").value = "";
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMessage })
+            });
+            const data = await response.json();
+
+            const botBubble = `<div class="chat bot">${data.response}</div>`;
+            chatBox.innerHTML += botBubble;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</head>
+<body>
+    <div class="chat-container">
+        <div id="chat-box" class="chat-box"></div>
+        <div class="input-container">
+            <input id="user-input" type="text" placeholder="輸入訊息...">
+            <button onclick="sendMessage()">送出</button>
+        </div>
+    </div>
+</body>
+</html>
